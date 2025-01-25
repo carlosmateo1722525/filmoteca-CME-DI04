@@ -7,8 +7,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -16,13 +19,25 @@ import java.io.IOException;
 
 public class MainViewController {
     @FXML
-    public Button borrarPelicula;
+    public Button search;
     @FXML
-    public Button modificarPelicula;
+    private TableView<Pelicula> peliculasTableView;
+    @FXML
+    private TableColumn<Pelicula, Integer> idColumn;
+    @FXML
+    private TableColumn<Pelicula, String> titleColumn;
+    @FXML
+    private TableColumn<Pelicula, Integer> yearColumn;
+    @FXML
+    private TableColumn<Pelicula, Double> ratingColumn;
+    @FXML
+    private TableColumn<Pelicula, String> descriptionColumn;
     @FXML
     public TextField searchField;
     @FXML
-    private ListView<Pelicula> peliculasListView;
+    public MenuItem modificarPelicula;
+    @FXML
+    public MenuItem borrarPelicula;
     @FXML
     private TextField idField;
     @FXML
@@ -38,22 +53,35 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
-        peliculasListView.setCellFactory(listView -> new ListCell<Pelicula>() {
-            @Override
-            protected void updateItem(Pelicula pelicula, boolean empty) {
-                super.updateItem(pelicula, empty);
-                if (pelicula != null && !empty) {
-                    setText("Pelicula -> ID: " + pelicula.getId() + " - " + pelicula.getTitle());
-                } else {
-                    setText(null);
-                }
-            }
-        });
-        ObservableList<Pelicula> listaPeliculas = DatosFilmoteca.getInstancia().getListaPeliculas();
-        peliculasListView.setItems(listaPeliculas);
+        descriptionColumn.setCellFactory(column -> {
+            return new TableCell<Pelicula, String>() {
+                private final Text text = new Text();
 
-        peliculasListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (empty || item == null) {
+                        setGraphic(null);
+                        setText(null);
+                    } else {
+                        text.setText(item);
+                        text.wrappingWidthProperty().bind(descriptionColumn.widthProperty().subtract(9));
+                        setGraphic(text);
+                    }
+                }
+            };
+        });
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
+        ratingColumn.setCellValueFactory(new PropertyValueFactory<>("rating"));
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+        ObservableList<Pelicula> listaPeliculas = DatosFilmoteca.getInstancia().getListaPeliculas();
+        peliculasTableView.setItems(listaPeliculas);
+        peliculasTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                descriptionField.setWrapText(true);
                 borrarPelicula.setDisable(false);
                 modificarPelicula.setDisable(false);
                 idField.setText(String.valueOf(newValue.getId()));
@@ -61,8 +89,18 @@ public class MainViewController {
                 yearField.setText(String.valueOf(newValue.getYear()));
                 descriptionField.setText(newValue.getDescription());
                 ratingField.setText(String.valueOf(newValue.getRating()));
-                Image posterImage = new Image(newValue.getPoster());
-                posterImageView.setImage(posterImage);
+                String posterUrl = newValue.getPoster();
+                if (posterUrl != null && !posterUrl.isEmpty()) {
+                    try {
+                        Image posterImage = new Image(posterUrl, true);
+                        posterImageView.setImage(posterImage);
+                    } catch (Exception e) {
+                        posterImageView.setImage(null);
+                    }
+                } else {
+                    posterImageView.setImage(null);
+                }
+
             } else {
                 borrarPelicula.setDisable(true);
                 modificarPelicula.setDisable(true);
@@ -81,6 +119,7 @@ public class MainViewController {
             stage.setScene(scene);
             stage.setWidth(500);
             stage.setHeight(800);
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,7 +128,7 @@ public class MainViewController {
 
     @FXML
     private void onModifyMovie() {
-        Pelicula selectedMovie = peliculasListView.getSelectionModel().getSelectedItem();
+        Pelicula selectedMovie = peliculasTableView.getSelectionModel().getSelectedItem();
         if (selectedMovie != null) {
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("PeliculaModify.fxml"));
@@ -97,6 +136,7 @@ public class MainViewController {
                 stage.setTitle("Modificar Película");
                 stage.setScene(new Scene(fxmlLoader.load(), 500, 800));
                 MOdifyMovieController controller = fxmlLoader.getController();
+                stage.setResizable(false);
                 controller.initialize(selectedMovie);
                 stage.show();
             } catch (IOException e) {
@@ -113,7 +153,7 @@ public class MainViewController {
 
     @FXML
     private void onDeleteMovie() {
-        Pelicula selectedMovie = peliculasListView.getSelectionModel().getSelectedItem();
+        Pelicula selectedMovie = peliculasTableView.getSelectionModel().getSelectedItem();
         if (selectedMovie != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Borrar Película");
@@ -157,15 +197,15 @@ public class MainViewController {
     public void onSearchMovie(ActionEvent actionEvent) {
         String query = searchField.getText().trim();
         if (!query.isEmpty()) {
-            ObservableList<Pelicula> peliculas = peliculasListView.getItems();
+            ObservableList<Pelicula> peliculas = peliculasTableView.getItems();
             Pelicula matchedMovie = peliculas.stream()
                     .filter(p -> p.getTitle().equalsIgnoreCase(query))
                     .findFirst()
                     .orElse(null);
 
             if (matchedMovie != null) {
-                peliculasListView.getSelectionModel().select(matchedMovie);
-                peliculasListView.scrollTo(matchedMovie);
+                peliculasTableView.getSelectionModel().select(matchedMovie);
+                peliculasTableView.scrollTo(matchedMovie);
             } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Busqueda");
@@ -173,10 +213,10 @@ public class MainViewController {
                 alert.setContentText("No hay peliculas con el titulo: " + query);
                 alert.show();
 
-                peliculasListView.getSelectionModel().clearSelection();
+                peliculasTableView.getSelectionModel().clearSelection();
             }
         } else {
-            peliculasListView.getSelectionModel().clearSelection();
+            peliculasTableView.getSelectionModel().clearSelection();
         }
     }
 
@@ -187,5 +227,9 @@ public class MainViewController {
         descriptionField.setText("");
         ratingField.setText("");
         posterImageView.setImage(null);
+    }
+
+    public void onSearch(ActionEvent actionEvent) {
+        onSearchMovie(actionEvent);
     }
 }

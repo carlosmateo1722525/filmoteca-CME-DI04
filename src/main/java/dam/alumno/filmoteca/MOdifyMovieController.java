@@ -29,6 +29,7 @@ public class MOdifyMovieController {
             ratingValueLabel.setText(String.format("%.1f", newValue));
         });
         idField.setText(String.valueOf(selectedMovie.getId()));
+        descriptionField.setWrapText(true);
         idField.setEditable(false);
         titleField.setText(selectedMovie.getTitle());
         yearField.setText(String.valueOf(selectedMovie.getYear()));

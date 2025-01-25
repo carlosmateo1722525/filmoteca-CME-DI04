@@ -41,6 +41,7 @@ public class AddMovieController {
         }
 
         idField.setText(String.valueOf(newId));
+        descriptionFieldx.setWrapText(true);
         idField.setEditable(false);
         ratingSlider.setMin(0);
         ratingSlider.setMax(10);
