@@ -20,13 +20,13 @@
             <Pane prefHeight="1194.0" prefWidth="1148.0" stylesheets="@stylesMainView.css">
                 <children>
                     <TextField fx:id="searchField" layoutX="423.0" layoutY="502.0" onAction="#onSearchMovie" prefHeight="38.0" prefWidth="340.0" promptText="Buscar película por título" />
-                    <TextArea fx:id="descriptionField" editable="false" layoutX="424.0" layoutY="776.0" prefHeight="144.0" prefWidth="645.0" />
+                    <TextArea fx:id="descriptionField" editable="false" layoutX="423.0" layoutY="841.0" prefHeight="75.0" prefWidth="645.0" />
 
-                    <Label layoutX="315.0" layoutY="776.0" text="Descripción:" />
+                    <Label layoutX="315.0" layoutY="841.0" text="Descripción:" />
                     <TextField fx:id="yearField" editable="false" layoutX="424.0" layoutY="661.0" prefHeight="33.0" prefWidth="47.0" />
 
                     <Label layoutX="319.0" layoutY="664.0" text="Año:" />
-                    <TextField fx:id="titleField" editable="false" layoutX="422.0" layoutY="608.0" prefHeight="32.0" prefWidth="340.0" />
+                    <TextField fx:id="titleField" editable="false" layoutX="419.0" layoutY="608.0" prefHeight="32.0" prefWidth="340.0" />
                     <TextField fx:id="idField" editable="false" layoutX="424.0" layoutY="556.0" prefHeight="32.0" prefWidth="47.0" />
 
                     <Label layoutX="323.0" layoutY="611.0" text="Título:" />
@@ -34,8 +34,9 @@
 
                     <Label layoutX="319.0" layoutY="721.0" text="Valoracion:" />
                     <TextField fx:id="ratingField" editable="false" layoutX="424.0" layoutY="721.0" prefHeight="32.0" prefWidth="47.0" />
+                    <TextArea fx:id="urlField" editable="false" layoutX="423.0" layoutY="772.0" prefHeight="33.0" prefWidth="645.0" />
 
-                    <ImageView fx:id="posterImageView" fitHeight="357.0" fitWidth="255.0" layoutX="26.0" layoutY="560.0" />
+                    <ImageView fx:id="posterImageView" fitHeight="357.0" fitWidth="255.0" layoutX="26.0" layoutY="556.0" />
                     <Label alignment="CENTER" layoutX="388.0" layoutY="29.0" prefHeight="38.0" prefWidth="325.0" text="FILMOTECA">
                         <font>
                             <Font size="24.0" />
@@ -60,6 +61,7 @@
                     </MenuButton>
                     <Label layoutX="323.0" layoutY="507.0" text="Busqueda:" />
                     <Button fx:id="search" layoutX="780.0" layoutY="501.0" mnemonicParsing="false" onAction="#onSearch" prefHeight="38.0" prefWidth="69.0" text="Buscar" />
+                    <Label layoutX="319.0" layoutY="777.0" text="URL:" />
                 </children>
             </Pane>
         </children>

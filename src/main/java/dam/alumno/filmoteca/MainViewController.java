@@ -21,6 +21,8 @@ public class MainViewController {
     @FXML
     public Button search;
     @FXML
+    public TextArea urlField;
+    @FXML
     private TableView<Pelicula> peliculasTableView;
     @FXML
     private TableColumn<Pelicula, Integer> idColumn;
@@ -81,6 +83,7 @@ public class MainViewController {
         peliculasTableView.setItems(listaPeliculas);
         peliculasTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                urlField.setWrapText(true);
                 descriptionField.setWrapText(true);
                 borrarPelicula.setDisable(false);
                 modificarPelicula.setDisable(false);
@@ -89,6 +92,7 @@ public class MainViewController {
                 yearField.setText(String.valueOf(newValue.getYear()));
                 descriptionField.setText(newValue.getDescription());
                 ratingField.setText(String.valueOf(newValue.getRating()));
+                urlField.setText(String.valueOf(newValue.getPoster()));
                 String posterUrl = newValue.getPoster();
                 if (posterUrl != null && !posterUrl.isEmpty()) {
                     try {

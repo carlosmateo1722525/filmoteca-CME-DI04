@@ -45,7 +45,6 @@ public class AddMovieController {
         idField.setEditable(false);
         ratingSlider.setMin(0);
         ratingSlider.setMax(10);
-        ratingSlider.setBlockIncrement(1);
         posterImageView.setImage(null);
         ratingSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             ratingValueLabel.setText(String.format("%.1f", newValue));
